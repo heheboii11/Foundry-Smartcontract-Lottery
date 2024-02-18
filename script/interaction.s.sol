@@ -10,9 +10,12 @@ import {LinkToken} from "../test/integration/mocks/Link.sol";
 import {DevOpsTools} from "lib/foundry-devops/src/DevOpsTools.sol";
 
 contract CreateSubscription is Script {
-    function createsubscription(address vrfaddress) public returns (uint64) {
+    function createsubscription(
+        address vrfaddress,
+        uint256 defaultkey
+    ) public returns (uint64) {
         console.log("creating your subscription on chain:", block.chainid);
-        vm.startBroadcast();
+        vm.startBroadcast(defaultkey);
         uint64 subId = VRFCoordinatorV2Mock(vrfaddress).createSubscription();
         vm.stopBroadcast();
         console.log("here is your subId:", subId);
@@ -21,9 +24,10 @@ contract CreateSubscription is Script {
 
     function createsubscriptionusingconfig() public returns (uint64) {
         Helperconfig helperconfig = new Helperconfig();
-        (, , address vrfaddress, , , , ) = helperconfig.getConfig();
+        (, , address vrfaddress, , , , , uint256 defaultkey) = helperconfig
+            .getConfig();
 
-        return createsubscription(vrfaddress);
+        return createsubscription(vrfaddress, defaultkey);
     }
 
     function run() public returns (uint64) {
@@ -32,22 +36,31 @@ contract CreateSubscription is Script {
 }
 
 contract Fundsubscription is Script {
-    uint96 constant FUNDAMOUNT = 0.1 ether;
+    uint96 constant FUNDAMOUNT = 5 ether;
 
     function fundsubusingConfig() public {
         Helperconfig helperconfig = new Helperconfig();
-        (, , address vrfaddress, , uint64 subId, , address link) = helperconfig
-            .getConfig();
-        fundsubscription(vrfaddress, subId, link);
+        (
+            ,
+            ,
+            address vrfaddress,
+            ,
+            uint64 subId,
+            ,
+            address link,
+            uint256 deployerKey
+        ) = helperconfig.getConfig();
+        fundsubscription(vrfaddress, subId, link, deployerKey);
     }
 
     function fundsubscription(
         address vrfaddress,
         uint64 subId,
-        address link
+        address link,
+        uint256 deployerKey
     ) public {
         if (block.chainid == 31337) {
-            vm.startBroadcast();
+            vm.startBroadcast(deployerKey);
             VRFCoordinatorV2Mock(vrfaddress).fundSubscription(
                 subId,
                 FUNDAMOUNT
@@ -73,10 +86,11 @@ contract Addconsumer is Script {
     function addconsumer(
         address raffle,
         address vrfaddress,
-        uint64 subid
+        uint64 subid,
+        uint256 deployerKey
     ) public {
         //if (block.chainid == 31337) {
-        vm.startBroadcast();
+        vm.startBroadcast(deployerKey);
         VRFCoordinatorV2Mock(vrfaddress).addConsumer(subid, raffle);
         vm.stopBroadcast();
         // } else {
@@ -88,8 +102,17 @@ contract Addconsumer is Script {
 
     function addconsumerusingconfig(address raffle) public {
         Helperconfig helperconfig = new Helperconfig();
-        (, , address vrfaddress, , uint64 subId, , ) = helperconfig.getConfig();
-        addconsumer(raffle, vrfaddress, subId);
+        (
+            ,
+            ,
+            address vrfaddress,
+            ,
+            uint64 subId,
+            ,
+            ,
+            uint256 deployerKey
+        ) = helperconfig.getConfig();
+        addconsumer(raffle, vrfaddress, subId, deployerKey);
     }
 
     function run() external {

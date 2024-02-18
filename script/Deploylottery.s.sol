@@ -17,15 +17,16 @@ contract Deploylottery is Script {
             bytes32 keyhash,
             uint64 subId,
             uint32 callgaslimit,
-            address link
+            address link,
+            uint256 deployerKey
         ) = helperconfig.getConfig();
         if (subId == 0) {
             CreateSubscription createsub = new CreateSubscription();
-            subId = createsub.createsubscription(vrfaddress);
+            subId = createsub.createsubscription(vrfaddress, deployerKey);
             Fundsubscription fundsub = new Fundsubscription();
-            fundsub.fundsubscription(vrfaddress, subId, link);
+            fundsub.fundsubscription(vrfaddress, subId, link, deployerKey);
         }
-        vm.startBroadcast();
+        vm.startBroadcast(deployerKey);
 
         lottery raffle = new lottery(
             fee,
@@ -37,7 +38,12 @@ contract Deploylottery is Script {
         );
         vm.stopBroadcast();
         Addconsumer addconsumer = new Addconsumer();
-        addconsumer.addconsumer(address(raffle), vrfaddress, subId);
+        addconsumer.addconsumer(
+            address(raffle),
+            vrfaddress,
+            subId,
+            deployerKey
+        );
         return (raffle, helperconfig);
     }
 }

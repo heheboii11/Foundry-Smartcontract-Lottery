@@ -15,4 +15,5 @@ docs/
 
 broadcast/
 lib/
+lib/chainlink-brownie-contracts
 coverage.txt
