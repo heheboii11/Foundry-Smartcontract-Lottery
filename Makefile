@@ -6,9 +6,9 @@ DEFAULT_ANVIL_KEY := 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf
 
 help:
 	@echo "Usage:"
-	@echo "  make deploy [ARGS=...]\n    example: make deploy ARGS=\"--network sepolia\""
+	@echo "  make deploy [ARGS=...]"    example: make deploy ARGS=\"--network sepolia\""
 	@echo ""
-	@echo "  make fund [ARGS=...]\n    example: make deploy ARGS=\"--network sepolia\""
+	@echo "  make fund [ARGS=...]"   example: make deploy ARGS=\"--network sepolia\""
 
 all: clean remove install update build
 
@@ -40,14 +40,13 @@ ifeq ($(findstring --network sepolia,$(ARGS)),--network sepolia)
 endif
 
 deploy:
-	@forge script script/DeployRaffle.s.sol:DeployRaffle $(NETWORK_ARGS)
+	@forge script script/Deploylottery.s.sol:Deploylottery $(NETWORK_ARGS)
 
 createSubscription:
-	@forge script script/Interactions.s.sol:CreateSubscription $(NETWORK_ARGS)
+	@forge script script/interaction.s.sol:CreateSubscription $(NETWORK_ARGS)
 
 addConsumer:
-	@forge script script/Interactions.s.sol:AddConsumer $(NETWORK_ARGS)
+	@forge script script/interactions.s.sol:Addconsumer $(NETWORK_ARGS)
 
 fundSubscription:
-	@forge script script/Interactions.s.sol:FundSubscription $(NETWORK_ARGS)
-
+	@forge script script/interactions.s.sol:Fundsubscription $(NETWORK_ARGS)

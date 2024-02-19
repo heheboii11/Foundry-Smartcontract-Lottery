@@ -28,22 +28,10 @@ contract Deploylottery is Script {
         }
         vm.startBroadcast(deployerKey);
 
-        lottery raffle = new lottery(
-            fee,
-            interval,
-            vrfaddress,
-            keyhash,
-            subId,
-            callgaslimit
-        );
+        lottery raffle = new lottery(fee, interval, vrfaddress, keyhash, subId, callgaslimit);
         vm.stopBroadcast();
         Addconsumer addconsumer = new Addconsumer();
-        addconsumer.addconsumer(
-            address(raffle),
-            vrfaddress,
-            subId,
-            deployerKey
-        );
+        addconsumer.addconsumer(address(raffle), vrfaddress, subId, deployerKey);
         return (raffle, helperconfig);
     }
 }
